@@ -97,9 +97,4 @@ Packages used:
 ✔ Uses multiple fallback methods for missing dates
 ✔ Tested on Windows 11
 
-------------------------------------------
-📩 QUESTIONS OR ISSUES?
-------------------------------------------
-
-If you run into problems or want to add features like GUI, dry-run mode, or support for more file types, feel free to ask for help!
 
