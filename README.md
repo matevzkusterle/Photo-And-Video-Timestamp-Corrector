@@ -1,15 +1,13 @@
 README - Photo & Video Timestamp Corrector
 ==========================================
 
-Author: [Your Name]
-Date: [Today's Date]
 Python Version: 3.10+
 
 ------------------------------------------
 📌 OVERVIEW
 ------------------------------------------
 
-This Python script scans a photo/video archive located in:
+This Python script scans a photo/video archive located in my local folder:
 
     c:\Users\kuste\Desktop\project\Arhiv slik
 
