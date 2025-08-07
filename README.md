@@ -1,98 +1,56 @@
-README - Photo & Video Timestamp Corrector
-==========================================
+# Fix Media Dates
 
-Python Version: 3.10+
+This script fixes incorrect "Created" and "Modified" dates for photos and videos in your media archive. It goes through all folders and updates file dates based on the most reliable source available.
 
-------------------------------------------
-📌 OVERVIEW
-------------------------------------------
+## 🔧 What It Does
 
-This Python script scans a photo/video archive located in my local folder:
+For every folder inside `Arhiv slik`, it checks each photo and video file and updates the following:
 
-    c:\Users\kuste\Desktop\project\Arhiv slik
+- **Photos**: Uses **"Date Taken"** from EXIF data.
+- **Videos**: Uses **"Media Created"** timestamp.
+- **Filesystem Dates**: Updates "Created" and "Modified" dates to match the correct date.
 
-It automatically fixes incorrect **"Created"**, **"Modified"**, and **"Date Taken"** metadata for photos and videos.
+If the correct date is missing or doesn’t match the folder year, it uses fallback rules to set a reasonable date.
 
-Use this when your photos and videos are out of order due to wrong file system dates, especially after copying files between devices.
+## 📁 Folder Rules
 
-------------------------------------------
-🎯 WHAT IT DOES
-------------------------------------------
+Each folder name may contain a year (like `Photos 2020`). That year is used to verify or correct the dates of files inside the folder.
 
-For each folder inside `Arhiv slik`, the script:
+### 1. If there is a `date.txt` file in the folder:
+- Its date (like `Sunday, 18 August 2024`) is used for all photos and videos in that folder.
+- It also updates:
+  - "Date Taken" (photos)
+  - "Media Created" (videos)
+  - Filesystem "Created" and "Modified" dates
 
-1. ✅ Reads a date from `date.txt` (if it exists).
-2. ✅ Updates all `.jpg`, `.jpeg` photos:
-     - Sets EXIF "Date Taken"
-     - Sets "Created" and "Modified" file times
-3. ✅ Updates all `.mp4` videos:
-     - Sets "Created" and "Modified" file times
-4. ✅ If `date.txt` is missing:
-     - Tries to read actual metadata from photos/videos
-     - If nothing found, tries to extract a year from the folder name (2000–2030)
-5. ✅ Leaves all other files untouched
+### 2. If there's no `date.txt`:
+- Photos get their date from EXIF **"Date Taken"**
+- Videos get their date from **"Media Created"**
 
-------------------------------------------
-📁 INPUT FORMAT
-------------------------------------------
+### 3. If the file's year doesn’t match the folder year:
+- All dates (EXIF, Media Created, Created, Modified) are set to **June 15** of the folder's year.
 
-Each folder may contain:
+### 4. If the file has no metadata at all:
+- Uses the folder year and sets dates to **June 15** of that year.
 
-- Photos: `.jpg`, `.jpeg`
-- Videos: `.mp4`
-- Optional: `date.txt` file, in this format:
+## ✅ Other Rules
 
-    Sunday, ‎18 ‎August ‎2024
+- Only processes `.jpg`, `.jpeg`, and `.mp4` files
+- Skips other files (like PDFs, RAW, etc.)
+- Processes files alphabetically
+- Does **not** space files over multiple days
+- Does **not** move or delete any files
+- Tries to fix broken EXIF without moving files to a "corrupt" folder
 
-Note: The script removes invisible characters from the `date.txt` line automatically.
+## 📌 Requirements
 
-------------------------------------------
-🔧 REQUIREMENTS
-------------------------------------------
+- **Windows only** (uses Windows-specific APIs)
+- Python packages needed:
+  - `pywin32`
+  - `Pillow`
+  - `piexif`
 
-Install required Python packages before running:
+Install with:
 
-    pip install pillow pywin32 piexif hachoir
-
-Packages used:
-- `pillow` – for reading EXIF from images
-- `piexif` – for modifying image EXIF data
-- `pywin32` – for setting Windows file timestamps
-- `hachoir` – for reading "media created" from `.mp4` files
-
-------------------------------------------
-▶️ HOW TO RUN
-------------------------------------------
-
-1. Place the script in your project folder.
-
-2. Open a terminal and run:
-
-    python fix_timestamps.py
-
-3. The script will scan all folders inside:
-
-    c:\Users\kuste\Desktop\project\Arhiv slik
-
-4. Progress will be printed to the console for each folder and file.
-
-------------------------------------------
-⚠️ NOTES
-------------------------------------------
-
-- Only `.jpg`, `.jpeg`, and `.mp4` files are modified.
-- Other files (e.g. `.png`, `.pdf`, `.docx`) are ignored.
-- "Date Taken" is only editable for JPEG images, not PNG or HEIC.
-- "Media Created" inside videos is not modified (only filesystem timestamps).
-- Always back up your archive before running bulk metadata updates.
-
-------------------------------------------
-✅ STATUS
-------------------------------------------
-
-✔ Fully working
-✔ Supports nested folders
-✔ Uses multiple fallback methods for missing dates
-✔ Tested on Windows 11
-
-
+```bash
+pip install pywin32 Pillow piexif
